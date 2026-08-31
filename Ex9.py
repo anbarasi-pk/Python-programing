@@ -5,15 +5,18 @@ class Node:
         self.left = None
         self.right = None
         self.height = 1
+
 class AVLTree:
     def height(self, node):
         if node is None:
             return 0
         return node.height
+
     def balance_factor(self, node):
         if node is None:
             return 0
         return self.height(node.left) - self.height(node.right)
+
     def right_rotate(self, y):
         x = y.left
         t = x.right
@@ -21,10 +24,8 @@ class AVLTree:
         x.right = y
         y.left = t
 
-        y.height = 1 + max(self.height(y.left),
-                           self.height(y.right))
-        x.height = 1 + max(self.height(x.left),
-                           self.height(x.right))
+        y.height = 1 + max(self.height(y.left), self.height(y.right))
+        x.height = 1 + max(self.height(x.left), self.height(x.right))
         return x
 
     def left_rotate(self, x):
@@ -34,10 +35,8 @@ class AVLTree:
         y.left = x
         x.right = t
 
-        x.height = 1 + max(self.height(x.left),
-                           self.height(x.right))
-        y.height = 1 + max(self.height(y.left),
-                           self.height(y.right))
+        x.height = 1 + max(self.height(x.left), self.height(x.right))
+        y.height = 1 + max(self.height(y.left), self.height(y.right))
 
         return y
 
@@ -53,8 +52,7 @@ class AVLTree:
             print("Enrollment ID already exists!")
             return root
 
-        root.height = 1 + max(self.height(root.left),
-                              self.height(root.right))
+        root.height = 1 + max(self.height(root.left), self.height(root.right))
 
         balance = self.balance_factor(root)
         if balance > 1 and key < root.left.key:
@@ -93,14 +91,11 @@ class AVLTree:
 
         if key < root.key:
             root.left = self.delete(root.left, key)
-
         elif key > root.key:
             root.right = self.delete(root.right, key)
-
         else:
             if root.left is None:
                 return root.right
-
             elif root.right is None:
                 return root.left
 
@@ -109,8 +104,7 @@ class AVLTree:
             root.name = temp.name
             root.right = self.delete(root.right, temp.key)
 
-        root.height = 1 + max(self.height(root.left),
-                              self.height(root.right))
+        root.height = 1 + max(self.height(root.left), self.height(root.right))
 
         balance = self.balance_factor(root)
         if balance > 1 and self.balance_factor(root.left) >= 0:
@@ -129,13 +123,26 @@ class AVLTree:
     def inorder(self, root):
         if root:
             self.inorder(root.left)
-            print(root.key, "-", root.name)
+            print(f"ID: {root.key} | Name: {root.name}")
             self.inorder(root.right)
+
+    def preorder(self, root):
+        if root:
+            print(f"ID: {root.key} | Name: {root.name}")
+            self.preorder(root.left)
+            self.preorder(root.right)
+
+    def postorder(self, root):
+        if root:
+            self.postorder(root.left)
+            self.postorder(root.right)
+            print(f"ID: {root.key} | Name: {root.name}")
 
     def count(self, root):
         if root is None:
             return 0
         return 1 + self.count(root.left) + self.count(root.right)
+
 tree = AVLTree()
 root = None
 
@@ -144,7 +151,7 @@ while True:
     print("1. Insert Enrollment Record")
     print("2. Delete Enrollment Record")
     print("3. Search Student Enrollment")
-    print("4. Display All Records")
+    print("4. Display All Records (Traversals)")
     print("5. Count Total Enrollments")
     print("6. Exit")
 
@@ -158,7 +165,6 @@ while True:
 
     elif choice == 2:
         eid = int(input("Enter Enrollment ID to delete: "))
-
         if tree.search(root, eid):
             root = tree.delete(root, eid)
             print("Record deleted successfully.")
@@ -168,7 +174,6 @@ while True:
     elif choice == 3:
         eid = int(input("Enter Enrollment ID to search: "))
         result = tree.search(root, eid)
-
         if result:
             print("Enrollment Found!")
             print("ID:", result.key)
@@ -177,11 +182,26 @@ while True:
             print("Enrollment ID not found.")
 
     elif choice == 4:
-        print("\nEnrollment Records (Sorted Order):")
-        if root:
-            tree.inorder(root)
-        else:
+        if not root:
             print("Tree is empty.")
+        else:
+            print("\n--- SELECT TRAVERSAL TYPE ---")
+            print("1. In-order Traversal (Sorted)")
+            print("2. Pre-order Traversal (Root First)")
+            print("3. Post-order Traversal (Children First)")
+            t_choice = int(input("Enter choice: "))
+            
+            if t_choice == 1:
+                print("\nIn-order Traversal:")
+                tree.inorder(root)
+            elif t_choice == 2:
+                print("\nPre-order Traversal:")
+                tree.preorder(root)
+            elif t_choice == 3:
+                print("\nPost-order Traversal:")
+                tree.postorder(root)
+            else:
+                print("Invalid choice!")
 
     elif choice == 5:
         print("Total Enrollments:", tree.count(root))
@@ -189,6 +209,5 @@ while True:
     elif choice == 6:
         print("Program terminated.")
         break
-
     else:
         print("Invalid choice!")
